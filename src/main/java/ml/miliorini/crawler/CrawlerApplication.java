@@ -8,6 +8,8 @@ import javax.servlet.FilterRegistration;
 import org.eclipse.jetty.servlets.CrossOriginFilter;
 
 import io.dropwizard.Application;
+import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
+import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import ml.miliorini.crawler.health.LicitacoesHealthCheck;
@@ -26,7 +28,12 @@ public class CrawlerApplication extends Application<CrawlerConfiguration> {
 
 	@Override
 	public void initialize(final Bootstrap<CrawlerConfiguration> bootstrap) {
-		// TODO: application initialization
+		// Enable variable substitution with environment variables
+        bootstrap.setConfigurationSourceProvider(
+                new SubstitutingSourceProvider(bootstrap.getConfigurationSourceProvider(),
+                                                   new EnvironmentVariableSubstitutor(false)
+                )
+        );
 	}
 
 	@Override
