@@ -2,3 +2,10 @@ logging:
   level: INFO
   loggers:
     ml.miliorini.crawler: DEBUG
+server:
+  type: simple
+  applicationContextPath: /
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: 8000

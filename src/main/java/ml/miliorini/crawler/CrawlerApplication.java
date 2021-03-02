@@ -1,5 +1,12 @@
 package ml.miliorini.crawler;
 
+import java.util.EnumSet;
+
+import javax.servlet.DispatcherType;
+import javax.servlet.FilterRegistration;
+
+import org.eclipse.jetty.servlets.CrossOriginFilter;
+
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -24,10 +31,29 @@ public class CrawlerApplication extends Application<CrawlerConfiguration> {
 
 	@Override
 	public void run(final CrawlerConfiguration configuration, final Environment environment) {
+		// CORS
+		this.setupCors(environment);
+
+		// Endpoint
 		final CrawlerResource resource = new CrawlerResource();
 		environment.jersey().register(resource);
+
+		// Health Check
 		final LicitacoesHealthCheck healthCheck = new LicitacoesHealthCheck();
 		environment.healthChecks().register("checkList", healthCheck);
+	}
+
+	/**
+	 * Configura CORS para permitir qualquer origem
+	 * 
+	 * @param environment
+	 */
+	private void setupCors(Environment environment) {
+		final FilterRegistration.Dynamic cors = environment.servlets().addFilter("CORS", CrossOriginFilter.class);
+		cors.setInitParameter("allowedOrigins", "*");
+		cors.setInitParameter("allowedHeaders", "X-Requested-With,Content-Type,Accept,Origin");
+		cors.setInitParameter("allowedMethods", "OPTIONS,GET,PUT,POST,DELETE,HEAD");
+		cors.addMappingForUrlPatterns(EnumSet.allOf(DispatcherType.class), true, "/*");
 	}
 
 }
